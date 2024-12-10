@@ -10,7 +10,7 @@ export default class ActivityStore {
     selectedActivity: Activity | undefined = undefined
     editMode = false
     loadingMode = false
-    loadingInitial = true
+    loadingInitial = false
 
     constructor() {
         makeAutoObservable(this)
@@ -56,7 +56,7 @@ export default class ActivityStore {
             this.setLoadingInitial(true)
 
             try {
-                activity = await agent.Activities.details(id)
+                activity = await agent.Activities.details(id) 
                 this.setActivity(activity)
                 runInAction(() => this.selectedActivity = activity)
                 this.setLoadingInitial(false)
@@ -97,7 +97,7 @@ export default class ActivityStore {
     createActivity = async (activity: Activity) => {
         this.loadingMode = true
         activity.id = uuid()
-        try {
+        try { 
             await agent.Activities.create(activity)
             runInAction(() => {
                 this.activityRegistry.set(activity.id, activity)

@@ -21,7 +21,7 @@ export default observer(function ActivityForm() {
     const { createActivity, updateActivity,
         loadingMode, loadActivity, loadingInitial } = activityStore
 
-    const { id } = useParams<{ id: string }>()
+    const { id } = useParams()
     const navigate = useNavigate();
 
     const [activity, setActivity] = useState<Activity>({
@@ -59,7 +59,7 @@ export default observer(function ActivityForm() {
     }
 
 
-    if (loadingInitial) return <LoadingComponent />
+    if (loadingInitial || !activity) return <LoadingComponent content='Loading activity...' />
 
     return (
         <Segment clearing>
