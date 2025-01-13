@@ -26,7 +26,9 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            var user = await _userManager.Users.Include(p => p.Photos)
+            .FirstOrDefaultAsync(x => x.Email == loginDto.Email);
+
             if (user == null) return Unauthorized();
 
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
@@ -40,20 +42,20 @@ namespace API.Controllers
             return Unauthorized();
         }
 
-        
+
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
             if (await _userManager.Users.AnyAsync(usr => usr.UserName == registerDto.Username))
             {
-                ModelState.AddModelError("username","Username is already taken.");
+                ModelState.AddModelError("username", "Username is already taken.");
                 return ValidationProblem();
             }
 
             if (await _userManager.Users.AnyAsync(usr => usr.Email == registerDto.Email))
             {
-                ModelState.AddModelError("email","Email is already taken.");
+                ModelState.AddModelError("email", "Email is already taken.");
                 return ValidationProblem();
             }
 
@@ -78,7 +80,9 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
+            var user = await _userManager.Users.Include(p => p.Photos)
+            .FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
+
             return CreateUserObject(user);
         }
 
@@ -88,7 +92,7 @@ namespace API.Controllers
             return new UserDto
             {
                 DisplayName = user.DisplayName,
-                Image = null,
+                Image = user?.Photos?.FirstOrDefault(x => x.IsMain).Url,
                 Username = user.UserName,
                 Token = _tokenService.CreateToken(user)
             };
