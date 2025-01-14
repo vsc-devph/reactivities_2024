@@ -6,7 +6,7 @@ import { router } from "../router/Routes";
 
 export default class UserStore {
     user: User | null = null;
-    
+
 
     /**
      *
@@ -37,18 +37,23 @@ export default class UserStore {
     }
 
 
-    logout = async()=>{
-        store.commonStore.setToken(null) 
+    logout = async () => {
+        store.commonStore.setToken(null)
         this.user = null
         router.navigate('/')
     }
 
-    getUser =async () => {
+    getUser = async () => {
         try {
             const user = await agent.Account.current()
-            runInAction(()=> this.user = user)
+            runInAction(() => this.user = user)
         } catch (error) {
             console.log(error)
         }
+    }
+
+    setImage = async (image:string) => {
+        if(this.user)
+            this.user.image= image
     }
 }
