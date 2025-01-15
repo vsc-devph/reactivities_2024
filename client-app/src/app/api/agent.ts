@@ -3,7 +3,7 @@ import { Activity, ActivityFormValues } from '../models/activity'
 import { toast } from 'react-toastify'
 import { router } from '../router/Routes'
 import { store } from '../stores/store'
-import { User, UserFormValues } from '../models/user'
+import {  User, UserFormValues } from '../models/user'
 import { Photo, Profile } from '../models/profile'
 
 const sleep = (delay: number) => {
@@ -102,6 +102,7 @@ const Profiles = {
     },
     setMainPhoto : (id:string)=> requests.post(`/photos/${id}/setmain`,{}),
     deletePhoto:(id:string) => requests.delete(`/photos/${id}/`),
+    updateProfile:(profile : Partial<Profile>) => requests.put('/profiles', profile)
 }
 
 const agent = {

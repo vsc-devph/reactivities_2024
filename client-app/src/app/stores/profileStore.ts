@@ -8,6 +8,7 @@ export default class ProfileStore {
     loadingProfile = false
     uploading = false
     loading = false
+    editing = false
 
     constructor() {
         makeAutoObservable(this)
@@ -81,10 +82,28 @@ export default class ProfileStore {
         try {
 
             await agent.Profiles.deletePhoto(photo.id)
-            runInAction(()=>{
-                if(this.profile){
-                    this.profile.photos = this.profile.photos?.filter(p=> p.id !== photo.id)
+            runInAction(() => {
+                if (this.profile) {
+                    this.profile.photos = this.profile.photos?.filter(p => p.id !== photo.id)
                 }
+                this.loading = false
+            })
+        } catch (error) {
+            runInAction(() => this.loading = false)
+            console.log(error)
+        }
+    }
+
+    updateProfile = async (profile: Partial<Profile>) => {
+        this.loading = true
+        try {
+
+            await agent.Profiles.updateProfile(profile)
+            runInAction(() => {
+                if (profile.displayName && profile.displayName !== store.userStore.user?.displayName) {
+                    store.userStore.setDisplayName(profile.displayName)
+                }
+                this.profile = { ...this.profile, ...profile as Profile }
                 this.loading = false
             })
         } catch (error) {
