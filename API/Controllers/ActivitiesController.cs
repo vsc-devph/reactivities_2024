@@ -17,7 +17,6 @@ namespace API.Controllers
 
         }
 
-        [AllowAnonymous]
         [HttpGet] //api/activities
         public async Task<IActionResult> GetActivities()
         {
@@ -25,7 +24,6 @@ namespace API.Controllers
         }
 
         
-        [AllowAnonymous]
         [HttpGet("{id}")] //api/activities/id
         public async Task<IActionResult> GetActivity(Guid id)
         {
