@@ -1,5 +1,6 @@
 
 using Application.Core;
+using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain;
@@ -20,8 +21,10 @@ namespace Application.Activities
         {
             private readonly DataContext __dataContext;
             private readonly IMapper _mapper;
-            public Handler(DataContext _dataContext, IMapper mapper)
+            private readonly IUserAccessor _userAccessor;
+            public Handler(DataContext _dataContext, IMapper mapper, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _mapper = mapper;
                 __dataContext = _dataContext;
 
@@ -29,8 +32,8 @@ namespace Application.Activities
             public async Task<Result<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var activity = await __dataContext.Activities
-                        .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider) 
-                        .FirstOrDefaultAsync(x=> x.Id == request.Id);
+                        .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, new {currentUsername = _userAccessor.getUsername()})
+                        .FirstOrDefaultAsync(x => x.Id == request.Id);
 
                 return Result<ActivityDto>.Success(activity);
             }
