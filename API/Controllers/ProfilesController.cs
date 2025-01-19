@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class ProfilesController:BaseAPIController
+    public class ProfilesController : BaseAPIController
     {
         [HttpGet("{username}")]
         public async Task<IActionResult> GetProfile(string username)
@@ -17,5 +17,10 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(command));
         }
 
+        [HttpGet("{username}/activities")]
+        public async Task<IActionResult> GetUserActivities(string username, string predicate)
+        {
+            return HandleResult(await Mediator.Send(new ListActivities.Query { Username = username, Predicate = predicate }));
+        }
     }
 }
