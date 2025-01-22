@@ -1,4 +1,5 @@
 using System.Net;
+using API.Controllers;
 using API.Extensions;
 using API.Middleware;
 using API.SignalR;
@@ -28,7 +29,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 Console.WriteLine($"Environment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
-
+app.UseDeveloperExceptionPage();
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
 
@@ -43,8 +44,12 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
+app.MapFallbackToController("Index","Fallback");
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;

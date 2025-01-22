@@ -15,7 +15,7 @@ export default class CommentStore {
     createHubSelection = (activityId: string) => {
         if (store.activityStore.selectedActivity) {
             this.hubConnection = new HubConnectionBuilder()
-                .withUrl("http://localhost:5000/chat?activityId=" + activityId, {
+                .withUrl(import.meta.env.VITE_CHAT_URL + "?activityId=" + activityId, {
                     accessTokenFactory: () => store.userStore.user?.token as string
                 })
                 .withAutomaticReconnect()
@@ -32,8 +32,8 @@ export default class CommentStore {
                 })
             })
             this.hubConnection.on("ReceiveComment", (comment: ChatComment) => {
-                runInAction(() => {  
-                    comment.createdAt = new Date(comment.createdAt) 
+                runInAction(() => {
+                    comment.createdAt = new Date(comment.createdAt)
                     this.comments.unshift(comment)
                 })
             })
