@@ -23,7 +23,7 @@ jobs:
 
       - name: Install deps and build react app
         run: | 
-          cd client app
+          cd client-app
           npm install
           npm run build 
 
