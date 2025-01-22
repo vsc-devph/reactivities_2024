@@ -16,11 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up NodeJS
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
       - name: Install deps and build react app
         run: | 
           cd client-app
