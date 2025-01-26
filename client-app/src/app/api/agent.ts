@@ -18,13 +18,13 @@ axios.defaults.baseURL = import.meta.env.VITE_API_URL
 const responseBody = <T>(response: AxiosResponse<T>) => response.data
 
 axios.interceptors.request.use(config => {
-    const token = store.commonStore.token 
+    const token = store.commonStore.token
     if (token && config.headers) config.headers.Authorization = `Bearer ${token}`
     return config
 })
 
 axios.interceptors.response.use(async response => {
-    if(import.meta.env.DEV)
+    if (import.meta.env.DEV)
         await sleep(1000)
     const pagination = response.headers['pagination']
     if (pagination) {
@@ -33,7 +33,7 @@ axios.interceptors.response.use(async response => {
     }
     return response
 }, (error: AxiosError) => {
-    const { data, status, config } = error.response as AxiosResponse
+    const { data, status, config, headers } = error.response as AxiosResponse
     switch (status) {
         case 400:
             if (config.method === 'get' && Object.prototype.hasOwnProperty.call(data.errors, 'id')) {
@@ -53,7 +53,13 @@ axios.interceptors.response.use(async response => {
             }
             break
         case 401:
-            toast.error('unauthorized')
+            if (status === 401 && headers['www-authenticate']?.startsWith('Bearer error="invalid_token"')) {
+                store.userStore.logout()
+                toast.error('Session expired. Please login again')
+            }
+            else {
+                toast.error('unauthorized')
+            }
             break
         case 403:
             toast.error('forbidden')
@@ -82,7 +88,7 @@ const requests = {
 }
 
 const Activities = {
-    list: (params: URLSearchParams) => axios.get<PaginatedResult<Activity[]>>("/activities",{params}).then(responseBody),
+    list: (params: URLSearchParams) => axios.get<PaginatedResult<Activity[]>>("/activities", { params }).then(responseBody),
     details: (id: string) => requests.get<Activity>(`/activities/${id}`),
     create: (activity: ActivityFormValues) => requests.post<void>('activities', activity),
     update: (activity: ActivityFormValues) => requests.put<void>(`/activities/${activity.id}`, activity),
@@ -95,7 +101,8 @@ const Account = {
     current: () => requests.get<User>('/account'),
     login: (user: UserFormValues) => requests.post<User>('account/login', user),
     register: (user: UserFormValues) => requests.post<User>('account/register', user),
-    fbLogin: (accessToken: string) => requests.post<User>(`account/fbLogin?accessToken=${accessToken}`,{})
+    fbLogin: (accessToken: string) => requests.post<User>(`account/fbLogin?accessToken=${accessToken}`, {}),
+    refreshToken: () => requests.post<User>('account/refreshToken', {})
 }
 
 const Profiles = {
@@ -114,7 +121,7 @@ const Profiles = {
     listFollowings: (username: string, predicate: string) =>
         requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`),
     listActivities: (username: string, predicate: string) =>
-        requests.get<UserActivity[]>(`/profiles/${username}/activities?predicate=${predicate}`) 
+        requests.get<UserActivity[]>(`/profiles/${username}/activities?predicate=${predicate}`)
 }
 
 const agent = {
