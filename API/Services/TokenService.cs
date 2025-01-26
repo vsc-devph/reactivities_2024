@@ -12,7 +12,7 @@ namespace API.Services
         public TokenService(IConfiguration config)
         {
             _config = config;
-            
+
         }
         public string CreateToken(AppUser user)
         {
@@ -31,7 +31,6 @@ namespace API.Services
                 Expires = DateTime.UtcNow.AddHours(5),
                 SigningCredentials = creds
             };
-
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

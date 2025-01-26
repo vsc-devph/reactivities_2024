@@ -13,7 +13,11 @@ export default class CommonStore {
             () => this.token,
             token => {
                 if (token) {
-                    localStorage.setItem('jwt', token)
+                    if (token.startsWith("eyJ")) { // Typical JWT token starts with "eyJ"
+                        localStorage.setItem('jwt', token);
+                    } else {
+                        localStorage.setItem('fb_access_token', token); // Store Facebook token separately
+                    }
                 }
                 else{
                     localStorage.removeItem('jwt')

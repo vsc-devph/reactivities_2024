@@ -20,7 +20,7 @@ export default class ActivityStore {
         makeAutoObservable(this)
 
         reaction(
-            ()=> this.predicate.keys(),
+            () => this.predicate.keys(),
             () => {
                 this.pagingParams = new PagingParams()
                 this.activityRegistry.clear()
@@ -42,7 +42,7 @@ export default class ActivityStore {
         switch (predicate) {
             case 'all':
                 resetPredicate()
-                this.predicate.set('all',true)
+                this.predicate.set('all', true)
                 break
             case 'isGoing':
                 resetPredicate()
@@ -52,7 +52,7 @@ export default class ActivityStore {
                 resetPredicate()
                 this.predicate.set('isHost', true)
                 break
-            case 'startDate': 
+            case 'startDate':
                 this.predicate.delete('startDate')
                 this.predicate.set('startDate', value)
                 break
@@ -92,6 +92,7 @@ export default class ActivityStore {
     loadActivities = async () => {
         this.setLoadingInitial(true)
         try {
+
             const result = await agent.Activities.list(this.axiosParams)
             result.data.forEach(activity => {
                 this.setActivity(activity)
@@ -99,6 +100,7 @@ export default class ActivityStore {
             this.setPagination(result.pagination)
             this.setLoadingInitial(false)
         } catch (error) {
+
             console.log(error)
             this.setLoadingInitial(false)
         }

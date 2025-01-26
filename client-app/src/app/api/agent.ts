@@ -18,7 +18,7 @@ axios.defaults.baseURL = import.meta.env.VITE_API_URL
 const responseBody = <T>(response: AxiosResponse<T>) => response.data
 
 axios.interceptors.request.use(config => {
-    const token = store.commonStore.token
+    const token = store.commonStore.token 
     if (token && config.headers) config.headers.Authorization = `Bearer ${token}`
     return config
 })
@@ -95,6 +95,7 @@ const Account = {
     current: () => requests.get<User>('/account'),
     login: (user: UserFormValues) => requests.post<User>('account/login', user),
     register: (user: UserFormValues) => requests.post<User>('account/register', user),
+    fbLogin: (accessToken: string) => requests.post<User>(`account/fbLogin?accessToken=${accessToken}`,{})
 }
 
 const Profiles = {
