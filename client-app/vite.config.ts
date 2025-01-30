@@ -8,7 +8,7 @@ export default defineConfig({
     outDir: '../API/wwwroot'
   },
   server: {
-    port: 3000,  
+    port: 3000,   
   },
   plugins: [react() ,mkcert()],
 })

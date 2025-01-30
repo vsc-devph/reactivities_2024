@@ -6,6 +6,7 @@ interface Props {
     name: string;
     label?: string;
     type?: string;
+    autocomplete?: string;
 }
 
 export default function TextInput(props: Props) {
